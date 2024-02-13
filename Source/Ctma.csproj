@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
+        <NoWarn>CS1591;CA2016</NoWarn>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FastEndpoints" Version="5.22.0" />
+        <PackageReference Include="FastEndpoints.Security" Version="5.22.0" />
+        <PackageReference Include="FastEndpoints.Swagger" Version="5.22.0" />
+        <PackageReference Include="MongoDB.Entities" Version="23.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Admin\Login\" />
+      <Folder Include="Features\Admin\Members\ListMembers\" />
+      <Folder Include="Features\Admin\Members\GetMember\" />
+      <Folder Include="Features\Admin\Members\UpdateMember\" />
+      <Folder Include="Features\Members\SignUp\" />
+    </ItemGroup>
+
+</Project>
