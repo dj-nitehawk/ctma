@@ -4,7 +4,7 @@ bld.Services
    .SwaggerDocument();
 
 var app = bld.Build();
-app.UseFastEndpoints()
+app.UseFastEndpoints(c=>c.Errors.UseProblemDetails())
    .UseSwaggerGen();
 app.Run();
 
