@@ -2,6 +2,9 @@
 
 sealed class Member : Entity
 {
+    public ulong MemberNumber { get; set; }
+    public DateOnly SignupDate { get; set; }
+
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Designation { get; set; }
@@ -18,5 +21,4 @@ sealed class Member : Entity
     public Address Address { get; set; }
     public string Qualifications { get; set; }
     public string Collaborate { get; set; }
-    public DateOnly SignupDate { get; set; }
 }

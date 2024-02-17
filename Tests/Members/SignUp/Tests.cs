@@ -1,8 +1,11 @@
-﻿using Members.Signup;
+﻿using Ctma;
+using Members.Signup;
+using MongoDB.Bson;
+using MongoDB.Entities;
 
 namespace Tests.Members.SignUp;
 
-public class Tests(AppFixture f, ITestOutputHelper o) : TestClass<AppFixture>(f, o)
+public class Tests(App f, Member mem, ITestOutputHelper o) : TestClass<App>(f, o), IClassFixture<Member>
 {
     [Fact]
     public async Task Invalid_User_Input()
@@ -48,5 +51,50 @@ public class Tests(AppFixture f, ITestOutputHelper o) : TestClass<AppFixture>(f,
             "address.PostalCode",
             "collaborate",
             "terms");
+    }
+
+    [Fact, Priority(1)]
+    public async Task Successful_Member_Creation()
+    {
+        var (rsp, res) = await Fx.Client.POSTAsync<Endpoint, Request, Response>(mem.SignupRequest);
+
+        rsp.IsSuccessStatusCode.Should().BeTrue();
+        ObjectId.TryParse(res.MemberId, out _).Should().BeTrue();
+        mem.MemberId = res.MemberId;
+        res.MemberNumber.Should().BeOfType(typeof(ulong)).And.BeGreaterThan(0);
+
+        var actual = await DB.Find<Dom.Member>()
+                             .MatchID(mem.MemberId)
+                             .ExecuteSingleAsync();
+
+        var expected = new Dom.Member
+        {
+            Address = new()
+            {
+                City = mem.SignupRequest.Address.City,
+                District = mem.SignupRequest.Address.District,
+                PostalCode = mem.SignupRequest.Address.PostalCode,
+                Street = mem.SignupRequest.Address.Street
+            },
+            BirthDay = DateOnly.Parse(mem.SignupRequest.BirthDay),
+            Collaborate = mem.SignupRequest.Collaborate,
+            CurrentWork = mem.SignupRequest.CurrentWork,
+            Designation = mem.SignupRequest.Designation.TitleCase(),
+            Email = mem.SignupRequest.Email.LowerCase(),
+            FirstName = mem.SignupRequest.UserName.FirstName,
+            Gender = mem.SignupRequest.Gender,
+            ID = mem.MemberId,
+            LastName = mem.SignupRequest.UserName.LastName.TitleCase(),
+            MemberNumber = res.MemberNumber,
+            SignupDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            Nic = mem.SignupRequest.Nic.UpperCase(),
+            Slmc = mem.SignupRequest.Slmc,
+            MobileNumber = mem.SignupRequest.Contact.MobileNumber,
+            Whatsapp = mem.SignupRequest.Contact.Whatsapp,
+            Telegram = mem.SignupRequest.Contact.Telegram,
+            Qualifications = mem.SignupRequest.Qualifications
+        };
+
+        actual.Should().BeEquivalentTo(expected);
     }
 }

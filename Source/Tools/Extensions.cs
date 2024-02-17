@@ -1,9 +1,27 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Ctma;
 
 public static partial class Extensions
 {
+    static readonly TextInfo _txt = new CultureInfo("en-US", false).TextInfo;
+
+    internal static string TitleCase(this string value)
+        => _txt.ToTitleCase(value.Trim());
+
+    internal static string LowerCase(this string value)
+        => _txt.ToLower(value.Trim());
+
+    internal static string UpperCase(this string value)
+        => _txt.ToUpper(value.Trim());
+
+    internal static bool HasValue(this string? value)
+        => !string.IsNullOrEmpty(value);
+
+    internal static bool HasNoValue(this string? value)
+        => string.IsNullOrEmpty(value);
+
     static readonly Regex _nicRx1 = NicRx1();
     static readonly Regex _nicRx2 = NicRx2();
 
@@ -13,7 +31,7 @@ public static partial class Extensions
     [GeneratedRegex(@"^\d{12}$")]
     private static partial Regex NicRx2();
 
-    public static bool IsAValidNic(this string nicNumber)
+    internal static bool IsAValidNic(this string nicNumber)
         => !string.IsNullOrEmpty(nicNumber) && (_nicRx1.IsMatch(nicNumber) || _nicRx2.IsMatch(nicNumber));
 
     static readonly Regex _slmcRx = SlmcRx();
@@ -21,13 +39,13 @@ public static partial class Extensions
     [GeneratedRegex(@"^\d{1,5}$")]
     private static partial Regex SlmcRx();
 
-    public static bool IsAValidSlmcNo(this string slmcNumber)
+    internal static bool IsAValidSlmcNo(this string slmcNumber)
         => !string.IsNullOrEmpty(slmcNumber) && _slmcRx.IsMatch(slmcNumber);
 
-    public static bool IsAValidMobileNumber(this string phoneNumber)
-        => int.TryParse(phoneNumber, out _) && phoneNumber.Length == 10;
+    internal static bool IsAValidMobileNumber(this string phoneNumber)
+        => phoneNumber.Length == 10;
 
-    public static bool IsAValidBirthDay(this string birthday)
+    internal static bool IsAValidBirthDay(this string birthday)
     {
         if (!DateTime.TryParse(birthday, out var birthDate))
             return false;
@@ -44,6 +62,6 @@ public static partial class Extensions
         return age >= 18;
     }
 
-    public static bool IsAValidGender(this string gender)
+    internal static bool IsAValidGender(this string gender)
         => gender is "Male" or "Female" or "Other";
 }
