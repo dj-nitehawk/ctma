@@ -11,7 +11,7 @@ bld.Services
 
 var app = bld.Build();
 app.UseFastEndpoints(c => c.Errors.UseProblemDetails())
-   .UseSwaggerGen();
+   .UseSwaggerGen(uiConfig: u => u.DeActivateTryItOut());
 
 await DB.InitAsync(app.Configuration["Database:Name"]!);
 
