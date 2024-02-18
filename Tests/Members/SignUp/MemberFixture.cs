@@ -3,14 +3,14 @@ using MongoDB.Entities;
 
 namespace Tests.Members.SignUp;
 
-public class Member : IAsyncLifetime
+public class MemberFixture : IAsyncLifetime
 {
     internal Request SignupRequest { get; init; }
     internal string? MemberId { get; set; }
 
     readonly Faker _fake = new();
 
-    public Member()
+    public MemberFixture()
     {
         SignupRequest = new()
         {

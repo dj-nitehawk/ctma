@@ -5,7 +5,7 @@ using MongoDB.Entities;
 
 namespace Tests.Members.SignUp;
 
-public class Tests(App f, Member mem, ITestOutputHelper o) : TestClass<App>(f, o), IClassFixture<Member>
+public class Tests(App f, MemberFixture mem, ITestOutputHelper o) : TestClass<App>(f, o), IClassFixture<MemberFixture>
 {
     [Fact]
     public async Task Invalid_User_Input()
@@ -96,5 +96,20 @@ public class Tests(App f, Member mem, ITestOutputHelper o) : TestClass<App>(f, o
         };
 
         actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, Priority(2)]
+    public async Task Duplicate_Info_Detection()
+    {
+        var (rsp, res) = await Fx.Client.POSTAsync<Endpoint, Request, ProblemDetails>(mem.SignupRequest);
+
+        rsp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var errKeys = res.Errors.Select(e => e.Name).ToList();
+        errKeys.Should().BeEquivalentTo(
+            "email",
+            "nic",
+            "slmc",
+            "contact.MobileNumber");
     }
 }
