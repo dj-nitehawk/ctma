@@ -1,6 +1,6 @@
 ﻿namespace Tests;
 
-public class App(IMessageSink s) : TestFixture<Program>(s)
+public class App(IMessageSink s) : AppFixture<Program>(s)
 {
     protected override Task SetupAsync()
         => Task.CompletedTask;

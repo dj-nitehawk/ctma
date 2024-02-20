@@ -1,10 +1,14 @@
 ﻿using Ctma;
 using FluentValidation;
 
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+
 namespace Members.Signup;
 
 sealed class Request
 {
+    //request dto shape is dictated by front-end team
+
     public User UserName { get; set; }
     public string Designation { get; set; }
     public string CurrentWork { get; set; }

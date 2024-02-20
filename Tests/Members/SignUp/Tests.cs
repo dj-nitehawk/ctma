@@ -5,7 +5,7 @@ using MongoDB.Entities;
 
 namespace Tests.Members.SignUp;
 
-public class Tests(App f, MemberFixture mem, ITestOutputHelper o) : TestClass<App>(f, o), IClassFixture<MemberFixture>
+public class Tests(App a, State s, ITestOutputHelper o) : TestClass<App, State>(a, s, o)
 {
     [Fact]
     public async Task Invalid_User_Input()
@@ -31,7 +31,7 @@ public class Tests(App f, MemberFixture mem, ITestOutputHelper o) : TestClass<Ap
             Collaborate = "abcd"
         };
 
-        var (rsp, res) = await Fx.Client.POSTAsync<Endpoint, Request, ProblemDetails>(req);
+        var (rsp, res) = await App.Client.POSTAsync<Endpoint, Request, ProblemDetails>(req);
 
         rsp.IsSuccessStatusCode.Should().BeFalse();
 
@@ -56,43 +56,43 @@ public class Tests(App f, MemberFixture mem, ITestOutputHelper o) : TestClass<Ap
     [Fact, Priority(1)]
     public async Task Successful_Member_Creation()
     {
-        var (rsp, res) = await Fx.Client.POSTAsync<Endpoint, Request, Response>(mem.SignupRequest);
+        var (rsp, res) = await App.Client.POSTAsync<Endpoint, Request, Response>(State.SignupRequest);
 
         rsp.IsSuccessStatusCode.Should().BeTrue();
         ObjectId.TryParse(res.MemberId, out _).Should().BeTrue();
-        mem.MemberId = res.MemberId;
+        State.MemberId = res.MemberId;
         res.MemberNumber.Should().BeOfType(typeof(ulong)).And.BeGreaterThan(0);
 
         var actual = await DB.Find<Dom.Member>()
-                             .MatchID(mem.MemberId)
+                             .MatchID(State.MemberId)
                              .ExecuteSingleAsync();
 
         var expected = new Dom.Member
         {
             Address = new()
             {
-                City = mem.SignupRequest.Address.City,
-                District = mem.SignupRequest.Address.District,
-                PostalCode = mem.SignupRequest.Address.PostalCode,
-                Street = mem.SignupRequest.Address.Street
+                City = State.SignupRequest.Address.City,
+                District = State.SignupRequest.Address.District,
+                PostalCode = State.SignupRequest.Address.PostalCode,
+                Street = State.SignupRequest.Address.Street
             },
-            BirthDay = DateOnly.Parse(mem.SignupRequest.BirthDay),
-            Collaborate = mem.SignupRequest.Collaborate,
-            CurrentWork = mem.SignupRequest.CurrentWork,
-            Designation = mem.SignupRequest.Designation.TitleCase(),
-            Email = mem.SignupRequest.Email.LowerCase(),
-            FirstName = mem.SignupRequest.UserName.FirstName,
-            Gender = mem.SignupRequest.Gender,
-            ID = mem.MemberId,
-            LastName = mem.SignupRequest.UserName.LastName.TitleCase(),
+            BirthDay = DateOnly.Parse(State.SignupRequest.BirthDay),
+            Collaborate = State.SignupRequest.Collaborate,
+            CurrentWork = State.SignupRequest.CurrentWork,
+            Designation = State.SignupRequest.Designation.TitleCase(),
+            Email = State.SignupRequest.Email.LowerCase(),
+            FirstName = State.SignupRequest.UserName.FirstName,
+            Gender = State.SignupRequest.Gender,
+            ID = State.MemberId,
+            LastName = State.SignupRequest.UserName.LastName.TitleCase(),
             MemberNumber = res.MemberNumber,
             SignupDate = DateOnly.FromDateTime(DateTime.UtcNow),
-            Nic = mem.SignupRequest.Nic.UpperCase(),
-            Slmc = mem.SignupRequest.Slmc,
-            MobileNumber = mem.SignupRequest.Contact.MobileNumber,
-            Whatsapp = mem.SignupRequest.Contact.Whatsapp,
-            Telegram = mem.SignupRequest.Contact.Telegram,
-            Qualifications = mem.SignupRequest.Qualifications
+            Nic = State.SignupRequest.Nic.UpperCase(),
+            Slmc = State.SignupRequest.Slmc,
+            MobileNumber = State.SignupRequest.Contact.MobileNumber,
+            Whatsapp = State.SignupRequest.Contact.Whatsapp,
+            Telegram = State.SignupRequest.Contact.Telegram,
+            Qualifications = State.SignupRequest.Qualifications
         };
 
         actual.Should().BeEquivalentTo(expected);
@@ -101,7 +101,7 @@ public class Tests(App f, MemberFixture mem, ITestOutputHelper o) : TestClass<Ap
     [Fact, Priority(2)]
     public async Task Duplicate_Info_Detection()
     {
-        var (rsp, res) = await Fx.Client.POSTAsync<Endpoint, Request, ProblemDetails>(mem.SignupRequest);
+        var (rsp, res) = await App.Client.POSTAsync<Endpoint, Request, ProblemDetails>(State.SignupRequest);
 
         rsp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
