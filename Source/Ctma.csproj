@@ -22,6 +22,7 @@
         <GenerateProgramFile>false</GenerateProgramFile>
     </PropertyGroup>
     <ItemGroup Condition="'$(Configuration)' != 'Release'">
+        <PackageReference Include="FakeItEasy" Version="8.1.0"/>
         <PackageReference Include="FastEndpoints.Testing" Version="5.22.0.13-beta"/>
         <PackageReference Include="FluentAssertions" Version="6.12.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0"/>

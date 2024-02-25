@@ -10,13 +10,17 @@ sealed class SendEmailMessage : ICommand
     public string Body { get; set; }
 }
 
-sealed class SendEmailMessageHandler(IAmazonSimpleEmailServiceV2 sesClient, IConfiguration cfg) : ICommandHandler<SendEmailMessage>
+sealed class SendEmailMessageHandler(IAmazonSimpleEmailServiceV2 sesClient, IWebHostEnvironment env, IConfiguration cfg) : ICommandHandler<SendEmailMessage>
 {
     readonly string _fromName = cfg["Email:FromName"]!;
     readonly string _fromEmail = cfg["Email:FromEmail"]!;
 
     public Task ExecuteAsync(SendEmailMessage cmd, CancellationToken c)
-        => sesClient.SendEmailAsync(
+    {
+        if (env.IsDevelopment())
+            return Task.CompletedTask;
+
+        return sesClient.SendEmailAsync(
             request: new()
             {
                 FromEmailAddress = $"{_fromName}<{_fromEmail}>",
@@ -34,4 +38,5 @@ sealed class SendEmailMessageHandler(IAmazonSimpleEmailServiceV2 sesClient, ICon
                 }
             },
             cancellationToken: c);
+    }
 }

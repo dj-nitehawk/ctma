@@ -1,4 +1,6 @@
-﻿namespace Ctma;
+﻿using Amazon.SimpleEmailV2;
+
+namespace Ctma;
 
 public class App(IMessageSink s) : AppFixture<Program>(s)
 {
@@ -8,7 +10,10 @@ public class App(IMessageSink s) : AppFixture<Program>(s)
         a.UseContentRoot(Directory.GetCurrentDirectory());
     }
 
-    protected override void ConfigureServices(IServiceCollection s) { }
+    protected override void ConfigureServices(IServiceCollection s)
+    {
+        s.AddSingleton<IAmazonSimpleEmailServiceV2, FakeSesClient>();
+    }
 
     protected override Task SetupAsync()
         => Task.CompletedTask;
