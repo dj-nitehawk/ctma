@@ -29,6 +29,7 @@
         <PackageReference Include="xunit" Version="2.7.0"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
         <PackageReference Include="coverlet.collector" Version="6.0.0" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
+        <Content Update="Tests\xunit.runner.json" TargetPath="xunit.runner.json"/>
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)' == 'Release'">
         <Compile Remove="**\Tests\**"/>
@@ -42,18 +43,6 @@
         <Folder Include="Features\Admin\Members\GetMember\"/>
         <Folder Include="Features\Admin\Members\Orientation\LogPayment\"/>
         <Folder Include="Features\Admin\Members\Orientation\RequestPayment\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Remove="Tests\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Remove="Tests\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <_ContentIncludedByDefault Remove="Tests\xunit.runner.json"/>
     </ItemGroup>
 
 </Project>
