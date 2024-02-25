@@ -1,7 +1,4 @@
-﻿using Members.Signup;
-using MongoDB.Entities;
-
-namespace Tests.Members.SignUp;
+﻿namespace Members.Signup;
 
 public class State : StateFixture
 {

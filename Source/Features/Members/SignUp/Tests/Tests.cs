@@ -1,9 +1,8 @@
-﻿using Ctma;
-using Members.Signup;
+﻿using System.Net;
+using Ctma;
 using MongoDB.Bson;
-using MongoDB.Entities;
 
-namespace Tests.Members.SignUp;
+namespace Members.Signup;
 
 public class Tests(App a, State s, ITestOutputHelper o) : TestClass<App, State>(a, s, o)
 {
