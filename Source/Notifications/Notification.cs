@@ -5,8 +5,9 @@ using MongoWebApiStarter.Notifications;
 
 namespace Ctma.Notifications;
 
-public partial record Notification
+sealed partial class Notification
 {
+    static readonly Regex _rx = MergeFieldRx();
     static readonly Dictionary<string, NotificationTemplate> _templates = new();
 
     public static async Task Initialize()
@@ -94,11 +95,11 @@ public partial record Notification
 
         var body = sb.ToString();
 
-        _missingTags.AddRange(Rx().Matches(body).Select(m => m.Value).Distinct());
+        _missingTags.AddRange(_rx.Matches(body).Select(m => m.Value).Distinct());
 
         return body;
     }
 
     [GeneratedRegex("{.*}")]
-    private static partial Regex Rx();
+    private static partial Regex MergeFieldRx();
 }
