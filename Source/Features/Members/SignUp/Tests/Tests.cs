@@ -2,7 +2,7 @@
 using Ctma;
 using MongoDB.Bson;
 
-namespace Members.Signup;
+namespace Members.Signup.Tests;
 
 public class Tests(App a, State s, ITestOutputHelper o) : TestClass<App, State>(a, s, o)
 {

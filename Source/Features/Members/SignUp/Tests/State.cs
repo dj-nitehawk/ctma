@@ -1,4 +1,4 @@
-﻿namespace Members.Signup;
+﻿namespace Members.Signup.Tests;
 
 public class State : StateFixture
 {
