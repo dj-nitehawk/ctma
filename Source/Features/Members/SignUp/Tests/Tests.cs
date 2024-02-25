@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using Ctma;
+using Ctma.Tests;
+using Dom;
 using MongoDB.Bson;
 
 namespace Members.Signup.Tests;
@@ -62,11 +64,11 @@ public class Tests(App a, State s, ITestOutputHelper o) : TestClass<App, State>(
         State.MemberId = res.MemberId;
         res.MemberNumber.Should().BeOfType(typeof(ulong)).And.BeGreaterThan(0);
 
-        var actual = await DB.Find<Dom.Member>()
+        var actual = await DB.Find<Member>()
                              .MatchID(State.MemberId)
                              .ExecuteSingleAsync();
 
-        var expected = new Dom.Member
+        var expected = new Member
         {
             Address = new()
             {

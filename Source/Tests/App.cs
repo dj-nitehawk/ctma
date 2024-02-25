@@ -1,6 +1,6 @@
 ﻿using Amazon.SimpleEmailV2;
 
-namespace Ctma;
+namespace Ctma.Tests;
 
 public class App(IMessageSink s) : AppFixture<Program>(s)
 {
@@ -14,10 +14,4 @@ public class App(IMessageSink s) : AppFixture<Program>(s)
     {
         s.AddSingleton<IAmazonSimpleEmailServiceV2, FakeSesClient>();
     }
-
-    protected override Task SetupAsync()
-        => Task.CompletedTask;
-
-    protected override Task TearDownAsync()
-        => Task.CompletedTask;
 }

@@ -3,7 +3,7 @@ using Amazon.SimpleEmailV2;
 using Amazon.SimpleEmailV2.Model;
 using Endpoint = Amazon.Runtime.Endpoints.Endpoint;
 
-namespace Ctma;
+namespace Ctma.Tests;
 
 class FakeSesClient : IAmazonSimpleEmailServiceV2
 {
