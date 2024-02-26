@@ -1,11 +1,23 @@
-﻿namespace Members.Signup.Tests;
+﻿using Amazon.SimpleEmailV2;
 
-public class State : StateFixture
+namespace Members.Signup.Tests;
+
+public class Sut : AppFixture<Program>
 {
-    internal Request SignupRequest { get; init; }
+    internal Request SignupRequest { get; set; } = default!;
     internal string? MemberId { get; set; }
 
-    public State()
+    protected override void ConfigureApp(IWebHostBuilder a)
+    {
+        a.UseContentRoot(Directory.GetCurrentDirectory());
+    }
+
+    protected override void ConfigureServices(IServiceCollection s)
+    {
+        s.AddSingleton<IAmazonSimpleEmailServiceV2, SesClient>();
+    }
+
+    protected override Task SetupAsync()
     {
         SignupRequest = new()
         {
@@ -38,10 +50,13 @@ public class State : StateFixture
             Qualifications = Fake.Lorem.Sentence(),
             Terms = true
         };
+
+        return Task.CompletedTask;
     }
 
     protected override async Task TearDownAsync()
     {
         await DB.DeleteAsync<Dom.Member>(MemberId);
+        await DB.DeleteAsync<Dom.JobRecord>(j => j.IsComplete == true);
     }
 }

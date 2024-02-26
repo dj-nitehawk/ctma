@@ -1,12 +1,12 @@
 ﻿using System.Net;
+using Amazon.SimpleEmailV2;
 using Ctma;
-using Ctma.Tests;
 using Dom;
 using MongoDB.Bson;
 
 namespace Members.Signup.Tests;
 
-public class Tests(App App, State State, ITestOutputHelper o) : TestBase<App, State>
+public class Cases(Sut App) : TestBase<Sut>
 {
     [Fact]
     public async Task Invalid_User_Input()
@@ -57,52 +57,55 @@ public class Tests(App App, State State, ITestOutputHelper o) : TestBase<App, St
     [Fact, Priority(1)]
     public async Task Successful_Member_Creation()
     {
-        var (rsp, res) = await App.Client.POSTAsync<Endpoint, Request, Response>(State.SignupRequest);
+        var (rsp, res) = await App.Client.POSTAsync<Endpoint, Request, Response>(App.SignupRequest);
 
         rsp.IsSuccessStatusCode.Should().BeTrue();
         ObjectId.TryParse(res.MemberId, out _).Should().BeTrue();
-        State.MemberId = res.MemberId;
+        App.MemberId = res.MemberId;
         res.MemberNumber.Should().BeOfType(typeof(ulong)).And.BeGreaterThan(0);
 
         var actual = await DB.Find<Member>()
-                             .MatchID(State.MemberId)
+                             .MatchID(App.MemberId)
                              .ExecuteSingleAsync();
 
         var expected = new Member
         {
             Address = new()
             {
-                City = State.SignupRequest.Address.City,
-                District = State.SignupRequest.Address.District,
-                PostalCode = State.SignupRequest.Address.PostalCode,
-                Street = State.SignupRequest.Address.Street
+                City = App.SignupRequest.Address.City,
+                District = App.SignupRequest.Address.District,
+                PostalCode = App.SignupRequest.Address.PostalCode,
+                Street = App.SignupRequest.Address.Street
             },
-            BirthDay = DateOnly.Parse(State.SignupRequest.BirthDay),
-            Collaborate = State.SignupRequest.Collaborate,
-            CurrentWork = State.SignupRequest.CurrentWork,
-            Designation = State.SignupRequest.Designation.TitleCase(),
-            Email = State.SignupRequest.Email.LowerCase(),
-            FirstName = State.SignupRequest.UserName.FirstName,
-            Gender = State.SignupRequest.Gender,
-            ID = State.MemberId,
-            LastName = State.SignupRequest.UserName.LastName.TitleCase(),
+            BirthDay = DateOnly.Parse(App.SignupRequest.BirthDay),
+            Collaborate = App.SignupRequest.Collaborate,
+            CurrentWork = App.SignupRequest.CurrentWork,
+            Designation = App.SignupRequest.Designation.TitleCase(),
+            Email = App.SignupRequest.Email.LowerCase(),
+            FirstName = App.SignupRequest.UserName.FirstName,
+            Gender = App.SignupRequest.Gender,
+            ID = App.MemberId,
+            LastName = App.SignupRequest.UserName.LastName.TitleCase(),
             MemberNumber = res.MemberNumber,
             SignupDate = DateOnly.FromDateTime(DateTime.UtcNow),
-            Nic = State.SignupRequest.Nic.UpperCase(),
-            Slmc = State.SignupRequest.Slmc,
-            MobileNumber = State.SignupRequest.Contact.MobileNumber,
-            Whatsapp = State.SignupRequest.Contact.Whatsapp,
-            Telegram = State.SignupRequest.Contact.Telegram,
-            Qualifications = State.SignupRequest.Qualifications
+            Nic = App.SignupRequest.Nic.UpperCase(),
+            Slmc = App.SignupRequest.Slmc,
+            MobileNumber = App.SignupRequest.Contact.MobileNumber,
+            Whatsapp = App.SignupRequest.Contact.Whatsapp,
+            Telegram = App.SignupRequest.Contact.Telegram,
+            Qualifications = App.SignupRequest.Qualifications
         };
 
         actual.Should().BeEquivalentTo(expected);
+
+        var fakeSesClient = (SesClient)App.Services.GetRequiredService<IAmazonSimpleEmailServiceV2>();
+        (await fakeSesClient.EmailReceived(App.MemberId)).Should().BeTrue();
     }
 
     [Fact, Priority(2)]
-    public async Task Duplicate_Info_Detection()
+    public async Task Duplicate_Info_Validation()
     {
-        var (rsp, res) = await App.Client.POSTAsync<Endpoint, Request, ProblemDetails>(State.SignupRequest);
+        var (rsp, res) = await App.Client.POSTAsync<Endpoint, Request, ProblemDetails>(App.SignupRequest);
 
         rsp.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 

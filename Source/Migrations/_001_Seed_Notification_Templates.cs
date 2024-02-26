@@ -76,6 +76,7 @@ internal sealed class _001_Seed_Notification_Templates : IMigration
                                                         Please review the application by <a href="{LoginLink}">signing in</a>.
                                                     </p>
                                                     <p style='margin:3px auto;font:10px arial,sans-serif;color:#999'>© 2024 Copyright</p>
+                                                    <div style="visibility:hidden">{TrackingId}</div>
                                                 </td>
                                             </tr>
                                             </tbody>

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Ctma;
@@ -16,10 +17,10 @@ public static partial class Extensions
     internal static string UpperCase(this string value)
         => _txt.ToUpper(value.Trim());
 
-    internal static bool HasValue(this string? value)
+    internal static bool HasValue([NotNullWhen(true)] this string? value)
         => !string.IsNullOrEmpty(value);
 
-    internal static bool HasNoValue(this string? value)
+    internal static bool HasNoValue([NotNullWhen(false)] this string? value)
         => string.IsNullOrEmpty(value);
 
     static readonly Regex _nicRx1 = NicRx1();

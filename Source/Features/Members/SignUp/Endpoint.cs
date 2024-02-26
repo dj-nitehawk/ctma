@@ -1,4 +1,6 @@
-﻿namespace Members.Signup;
+﻿using Ctma;
+
+namespace Members.Signup;
 
 sealed class Endpoint : Endpoint<Request, Response, Mapper>
 {
@@ -19,7 +21,18 @@ sealed class Endpoint : Endpoint<Request, Response, Mapper>
         await member.SaveAsync(cancellation: c);
 
         //todo: send email to member
-        //todo: send email to admin for review
+
+        await new Notification
+            {
+                Type = NotificationType.ReviewNewMember,
+                SendEmail = true,
+                SendSms = false,
+                ToEmail = Config["Email:Administrator"]!,
+                ToName = "CTMA Admin"
+            }.Merge("{MemberName}", $"{member.FirstName} {member.LastName}")
+             .Merge("{LoginLink}", "https://ctma.lk/admin/login")
+             .Merge("{TrackingId}", member.ID)
+             .AddToSendingQueueAsync();
 
         await SendAsync(
             new()

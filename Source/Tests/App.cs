@@ -2,7 +2,7 @@
 
 namespace Ctma.Tests;
 
-public class App(IMessageSink s) : AppFixture<Program>(s)
+public class App : AppFixture<Program>
 {
     protected override void ConfigureApp(IWebHostBuilder a)
     {

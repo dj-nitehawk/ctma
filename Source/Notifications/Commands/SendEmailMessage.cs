@@ -2,7 +2,7 @@
 
 namespace Ctma.Notifications;
 
-sealed class SendEmailMessage : ICommand
+public sealed class SendEmailMessage : ICommand
 {
     public string ToName { get; set; }
     public string ToEmail { get; set; }

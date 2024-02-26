@@ -7,8 +7,8 @@ namespace Ctma.Tests;
 
 class FakeSesClient : IAmazonSimpleEmailServiceV2
 {
-    public virtual Task<SendEmailResponse> SendEmailAsync(SendEmailRequest request, CancellationToken cancellationToken = new())
-        => Task.FromResult(new SendEmailResponse { MessageId = "sent" });
+    public virtual Task<SendEmailResponse> SendEmailAsync(SendEmailRequest request, CancellationToken ct = default)
+        => Task.FromResult(new SendEmailResponse());
 
 #region unimplemented
 
