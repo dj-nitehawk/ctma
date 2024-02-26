@@ -11,9 +11,9 @@
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.SimpleEmailV2" Version="3.7.300.52"/>
-        <PackageReference Include="FastEndpoints" Version="5.22.0.13-beta"/>
-        <PackageReference Include="FastEndpoints.Security" Version="5.22.0.13-beta"/>
-        <PackageReference Include="FastEndpoints.Swagger" Version="5.22.0.13-beta"/>
+        <PackageReference Include="FastEndpoints" Version="5.22.0.14-beta"/>
+        <PackageReference Include="FastEndpoints.Security" Version="5.22.0.14-beta"/>
+        <PackageReference Include="FastEndpoints.Swagger" Version="5.22.0.14-beta"/>
         <PackageReference Include="MongoDB.Entities" Version="23.0.1"/>
     </ItemGroup>
 
@@ -23,7 +23,7 @@
     </PropertyGroup>
     <ItemGroup Condition="'$(Configuration)' != 'Release'">
         <PackageReference Include="FakeItEasy" Version="8.1.0"/>
-        <PackageReference Include="FastEndpoints.Testing" Version="5.22.0.13-beta"/>
+        <PackageReference Include="FastEndpoints.Testing" Version="5.22.0.14-beta"/>
         <PackageReference Include="FluentAssertions" Version="6.12.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0"/>
         <PackageReference Include="xunit" Version="2.7.0"/>

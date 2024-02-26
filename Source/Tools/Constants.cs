@@ -8,4 +8,5 @@ static class Constants
 static class NotificationType
 {
     public const string MemberWelcome = nameof(MemberWelcome);
+    public const string ReviewNewMember = nameof(ReviewNewMember);
 }
