@@ -29,6 +29,7 @@ sealed class JobStorageProvider : IJobStorageProvider<JobRecord>
             r.IsComplete = true;
             r.IsCancelled = true;
             r.CancelledOn = DateTime.UtcNow;
+            r.FailureReason = exception.Message;
 
             return r.SaveAsync(cancellation: ct);
         }
