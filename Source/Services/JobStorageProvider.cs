@@ -25,16 +25,23 @@ sealed class JobStorageProvider : IJobStorageProvider<JobRecord>
     public Task OnHandlerExecutionFailureAsync(JobRecord r, Exception exception, CancellationToken ct)
     {
         if (r.FailureCount > 100)
-            return DB.DeleteAsync<JobRecord>(r.ID, cancellation: ct);
+        {
+            r.IsComplete = true;
+            r.IsCancelled = true;
+            r.CancelledOn = DateTime.UtcNow;
+
+            return r.SaveAsync(cancellation: ct);
+        }
 
         var retryOn = DateTime.UtcNow.AddMinutes(1);
         var expireOn = retryOn.AddHours(4);
 
         return DB.Update<JobRecord>()
                  .MatchID(r.ID)
-                 .Modify(b => b.Inc(jr => jr.FailureCount, 1)) //increment the failure count.
-                 .Modify(jr => jr.ExecuteAfter, retryOn)       //slide the execute after to 1 min in future.
-                 .Modify(jr => jr.ExpireOn, expireOn)          //slide the expire on to 4 hours from execute after time.
+                 .Modify(jr => jr.FailureReason, exception.Message) //save exception msg
+                 .Modify(b => b.Inc(jr => jr.FailureCount, 1))      //increment the failure count.
+                 .Modify(jr => jr.ExecuteAfter, retryOn)            //slide the execute after to 1 min in future.
+                 .Modify(jr => jr.ExpireOn, expireOn)               //slide the expire on to 4 hours from execute after time.
                  .ExecuteAsync(ct);
     }
 

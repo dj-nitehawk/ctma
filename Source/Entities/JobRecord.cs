@@ -10,9 +10,24 @@ sealed class JobRecord : Entity, IJobStorageRecord
     public bool IsComplete { get; set; }
     public int FailureCount { get; set; }
 
+    [IgnoreDefault]
+    public string? FailureReason { get; set; }
+
+    [IgnoreDefault]
+    public bool? IsCancelled { get; set; }
+
+    [IgnoreDefault]
+    public DateTime? CancelledOn { get; set; }
+
     static JobRecord()
     {
         MessagePackSerializer.DefaultOptions = MessagePack.Resolvers.ContractlessStandardResolver.Options;
+        _ = DB.Index<JobRecord>()
+              .Key(r => r.QueueID, KeyType.Ascending)
+              .Key(r => r.IsComplete, KeyType.Ascending)
+              .Key(r => r.ExecuteAfter, KeyType.Ascending)
+              .Key(r => r.ExpireOn, KeyType.Ascending)
+              .CreateAsync(); //covers job storage provider's GetNextBatchAsync query
     }
 
     public byte[] CommandMsgPack { get; set; }
